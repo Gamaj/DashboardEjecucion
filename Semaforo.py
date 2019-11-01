@@ -33,7 +33,11 @@ app.layout = html.Div([
     html.Div([ dcc.Graph(
             id='barWeek',
         )
-    ], style={'width': '100%', 'display': 'inline-block', 'padding': '0 20'})
+    ], style={'width': '100%', 'display': 'inline-block', 'padding': '0 20'}),
+    html.Div([ dcc.Graph(
+            id='barChannel',
+        )
+    ], style={'width': '100%', 'display': 'inline-block', 'padding': '0 20'}),
     ])
 
 @app.callback(
@@ -96,7 +100,7 @@ def graphweek(actividad):
         altipal = df[df['Distribuidor']== 'Altipal']
         dialsa =  df[df['Distribuidor']== 'Dialsa']
         meico =  df[df['Distribuidor']== 'Meico']
-        piedata = go.Bar(x = ['Altipal' , 'Dialsa','Meico' ],y=[(geek.nansum(altipal['REAL'])/geek.nansum(altipal['OBJ']))*100,(geek.nansum(dialsa['REAL'])/geek.nansum(dialsa['OBJ']))*100,(geek.nansum(meico['REAL'])/geek.nansum(meico['OBJ']))*100])
+        piedata = go.Bar(y = ['Altipal' , 'Dialsa','Meico' ],x=[(geek.nansum(altipal['REAL'])/geek.nansum(altipal['OBJ']))*100,(geek.nansum(dialsa['REAL'])/geek.nansum(dialsa['OBJ']))*100,(geek.nansum(meico['REAL'])/geek.nansum(meico['OBJ']))*100])
         
         return {
             'data':[piedata],'layout': {'title': 'EJECUCION'}
@@ -104,17 +108,53 @@ def graphweek(actividad):
     else:    
         dff = df[df['Plataforma'] == actividad]
         semana = dff
-        semana1 = semana [semana['SEMANA'] == '1']
-        semana2 = semana [semana['SEMANA'] == '2']
-        semana3 = semana [semana['SEMANA'] == '3']
-        semana4 = semana [semana['SEMANA'] == '4']
-        print ((geek.nansum(semana1['REAL'])/geek.nansum(semana1['OBJ']))*100)
-        piedata = go.Scatter(x = ['1','2','3','4'],y=[(geek.nansum(semana1['REAL'])/geek.nansum(semana1['OBJ']))*100,(geek.nansum(semana2['REAL'])/geek.nansum(semana2['OBJ']))*100,(geek.nansum(semana3['REAL'])/geek.nansum(semana3['OBJ']))*100,(geek.nansum(semana4['REAL'])/geek.nansum(semana4['OBJ']))*100])
-        
+        semana1 = semana[semana['SEMANA'] == 1]
+        semana2 = semana[semana['SEMANA'] == 2]
+        semana3 = semana[semana['SEMANA'] == 3]
+        semana4 = semana[semana['SEMANA'] == 4]
+        lineGeneraldata = go.Scatter(name= 'Total', x = ['1','2','3','4'],y=[(geek.nansum(semana1['REAL'])/geek.nansum(semana1['OBJ']))*100,(geek.nansum(semana2['REAL'])/geek.nansum(semana2['OBJ']))*100,(geek.nansum(semana3['REAL'])/geek.nansum(semana3['OBJ']))*100,(geek.nansum(semana4['REAL'])/geek.nansum(semana4['OBJ']))*100])
+        semana = dff[dff['Distribuidor']== 'Altipal']
+        semana1 = semana[semana['SEMANA'] == 1]
+        semana2 = semana[semana['SEMANA'] == 2]
+        semana3 = semana[semana['SEMANA'] == 3]
+        semana4 = semana[semana['SEMANA'] == 4]
+        lineAltipaldata = go.Scatter(name= 'Altipal', x = ['1','2','3','4'],y=[(geek.nansum(semana1['REAL'])/geek.nansum(semana1['OBJ']))*100,(geek.nansum(semana2['REAL'])/geek.nansum(semana2['OBJ']))*100,(geek.nansum(semana3['REAL'])/geek.nansum(semana3['OBJ']))*100,(geek.nansum(semana4['REAL'])/geek.nansum(semana4['OBJ']))*100])
+        semana = dff[dff['Distribuidor']== 'Dialsa']
+        semana1 = semana[semana['SEMANA'] == 1]
+        semana2 = semana[semana['SEMANA'] == 2]
+        semana3 = semana[semana['SEMANA'] == 3]
+        semana4 = semana[semana['SEMANA'] == 4]
+        lineDialsadata = go.Scatter(name= 'Dialsa', x = ['1','2','3','4'],y=[(geek.nansum(semana1['REAL'])/geek.nansum(semana1['OBJ']))*100,(geek.nansum(semana2['REAL'])/geek.nansum(semana2['OBJ']))*100,(geek.nansum(semana3['REAL'])/geek.nansum(semana3['OBJ']))*100,(geek.nansum(semana4['REAL'])/geek.nansum(semana4['OBJ']))*100])
+        semana = dff[dff['Distribuidor']== 'Meico']
+        semana1 = semana[semana['SEMANA'] == 1]
+        semana2 = semana[semana['SEMANA'] == 2]
+        semana3 = semana[semana['SEMANA'] == 3]
+        semana4 = semana[semana['SEMANA'] == 4]
+        lineMeicodata = go.Scatter(name= 'Meico', x = ['1','2','3','4'],y=[(geek.nansum(semana1['REAL'])/geek.nansum(semana1['OBJ']))*100,(geek.nansum(semana2['REAL'])/geek.nansum(semana2['OBJ']))*100,(geek.nansum(semana3['REAL'])/geek.nansum(semana3['OBJ']))*100,(geek.nansum(semana4['REAL'])/geek.nansum(semana4['OBJ']))*100])
+
         return {
-            'data':[piedata],'layout': {'title': 'EJECUCION'}
+            'data':[lineGeneraldata , lineAltipaldata, lineDialsadata, lineMeicodata],'layout': {'title': 'EJECUCION'}
         }
 
+@app.callback(
+    dash.dependencies.Output('barChannel','figure'),
+    [dash.dependencies.Input('Actividades','value')])  
+def graphChannel(actividad):
+    if actividad is None:
+        ontrade = df[df['Canal']== 'On Trade']
+        offtrade = df[df['Canal'] == 'Off Trade']
+        piedata = go.Bar(x = ['On Trade' , 'Off Trade'],y=[(geek.nansum(ontrade['REAL'])/geek.nansum(ontrade['OBJ']))*100,(geek.nansum(offtrade['REAL'])/geek.nansum(offtrade['OBJ']))*100])
+        return {
+            'data':[piedata],'layout': {'title': 'EJECUCION x CANAL'}
+        }
+    else:
+        dff = df[df['Plataforma'] == actividad]
+        ontrade = dff[dff['Canal']== 'On Trade']
+        offtrade = dff[dff['Canal'] == 'Off Trade']
+        piedata = go.Bar(x = ['On Trade' , 'Off Trade'],y=[(geek.nansum(ontrade['REAL'])/geek.nansum(ontrade['OBJ']))*100,(geek.nansum(offtrade['REAL'])/geek.nansum(offtrade['OBJ']))*100])
+        return {
+            'data':[piedata],'layout': {'title': 'EJECUCION x CANAL'}
+        }
 
 
 if __name__ == '__main__':
