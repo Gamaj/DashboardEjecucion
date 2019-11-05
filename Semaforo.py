@@ -42,6 +42,10 @@ app.layout = html.Div([
             id='barSegment',
         )
     ], style={'width': '100%', 'display': 'inline-block', 'padding': '0 20'}),
+     html.Div([ dcc.Graph(
+            id='barFaltante',
+        )
+    ], style={'width': '100%', 'display': 'inline-block', 'padding': '0 20'}),
     ])
 
 @app.callback(
@@ -198,18 +202,67 @@ def graphChannel(actividad):
         tat = df[df['Segmento Según Scorecard'] == 'TAT (TIENDAS)']
         piedata = go.Bar(y = ['BARES' , 'Conveniencia','DISCOTECAS','Droguerías','Hiper y Supermercados','LICORERAS','MAYORISTAS','RESTAURANTES','Store','SUPERMERCADOS', 'TAT'],x=[(geek.nansum(bares['REAL'])/geek.nansum(bares['OBJ']))*100,(geek.nansum(Conveniencia['REAL'])/geek.nansum(Conveniencia['OBJ']))*100,(geek.nansum(Discotecas['REAL'])/geek.nansum(Discotecas['OBJ']))*100,(geek.nansum(Drogueria['REAL'])/geek.nansum(Drogueria['OBJ']))*100,(geek.nansum(Hiperysuper['REAL'])/geek.nansum(Hiperysuper['OBJ']))*100,(geek.nansum(licoreras['REAL'])/geek.nansum(licoreras['OBJ']))*100,(geek.nansum(mayorista['REAL'])/geek.nansum(mayorista['OBJ']))*100,(geek.nansum(restaurantes['REAL'])/geek.nansum(restaurantes['OBJ']))*100,(geek.nansum(store['REAL'])/geek.nansum(store['OBJ']))*100,(geek.nansum(supermercado['REAL'])/geek.nansum(supermercado['OBJ']))*100,(geek.nansum(tat['REAL'])/geek.nansum(tat['OBJ']))*100], orientation = 'h')
         return {
-            'data':[piedata],'layout': {'title': 'EJECUCION x CANAL'}
+            'data':[piedata],'layout': {'title': 'EJECUCION x SEGMENTO SC'}
         }
     else:
         dff = df[df['Plataforma'] == actividad]
-        ontrade = dff[dff['Canal']== 'On Trade']
-        offtrade = dff[dff['Canal'] == 'Off Trade']
-        piedata = go.Bar(y = ['On Trade' , 'Off Trade'],x=[(geek.nansum(ontrade['REAL'])/geek.nansum(ontrade['OBJ']))*100,(geek.nansum(offtrade['REAL'])/geek.nansum(offtrade['OBJ']))*100], orientation = 'h')
+        bares = dff[dff['Segmento Según Scorecard']== 'BARES']
+        Conveniencia = dff[dff['Segmento Según Scorecard']== 'Conveniencia']
+        Discotecas = dff[dff['Segmento Según Scorecard']== 'DISCOTECAS']
+        Drogueria = dff[dff['Segmento Según Scorecard']== 'Droguerías']
+        Hiperysuper = dff[dff['Segmento Según Scorecard']== 'Hiper y Supermercados']
+        licoreras = dff[dff['Segmento Según Scorecard'] == 'LICORERAS']
+        mayorista = dff[dff['Segmento Según Scorecard'] == 'MAYORISTAS']
+        restaurantes = dff[dff['Segmento Según Scorecard'] == 'RESTAURANTES']
+        store = dff[dff['Segmento Según Scorecard'] == 'Store']
+        supermercado = dff[dff['Segmento Según Scorecard'] == 'SUPERMERCADOS']
+        tat = dff[dff['Segmento Según Scorecard'] == 'TAT (TIENDAS)']
+        piedata = go.Bar(y = ['BARES' , 'Conveniencia','DISCOTECAS','Droguerías','Hiper y Supermercados','LICORERAS','MAYORISTAS','RESTAURANTES','Store','SUPERMERCADOS', 'TAT'],x=[(geek.nansum(bares['REAL'])/geek.nansum(bares['OBJ']))*100,(geek.nansum(Conveniencia['REAL'])/geek.nansum(Conveniencia['OBJ']))*100,(geek.nansum(Discotecas['REAL'])/geek.nansum(Discotecas['OBJ']))*100,(geek.nansum(Drogueria['REAL'])/geek.nansum(Drogueria['OBJ']))*100,(geek.nansum(Hiperysuper['REAL'])/geek.nansum(Hiperysuper['OBJ']))*100,(geek.nansum(licoreras['REAL'])/geek.nansum(licoreras['OBJ']))*100,(geek.nansum(mayorista['REAL'])/geek.nansum(mayorista['OBJ']))*100,(geek.nansum(restaurantes['REAL'])/geek.nansum(restaurantes['OBJ']))*100,(geek.nansum(store['REAL'])/geek.nansum(store['OBJ']))*100,(geek.nansum(supermercado['REAL'])/geek.nansum(supermercado['OBJ']))*100,(geek.nansum(tat['REAL'])/geek.nansum(tat['OBJ']))*100], orientation = 'h')
         return {
-            'data':[piedata],'layout': {'title': 'EJECUCION x CANAL'}
+            'data':[piedata],'layout': {'title': 'EJECUCION x SEGMENTO SC'}
         }
+
+@app.callback(
+    dash.dependencies.Output('barFaltante','figure'),
+    [dash.dependencies.Input('Actividades','value')])  
+def graphChannel(actividad):
+    if actividad is None:
+        dff = df['Plataforma'].unique()
+        print(dff)
+        bares = df[df['Segmento Según Scorecard']== 'BARES']
+        Conveniencia = df[df['Segmento Según Scorecard']== 'Conveniencia']
+        Discotecas = df[df['Segmento Según Scorecard']== 'DISCOTECAS']
+        Drogueria = df[df['Segmento Según Scorecard']== 'Droguerías']
+        Hiperysuper = df[df['Segmento Según Scorecard']== 'Hiper y Supermercados']
+        licoreras = df[df['Segmento Según Scorecard'] == 'LICORERAS']
+        mayorista = df[df['Segmento Según Scorecard'] == 'MAYORISTAS']
+        restaurantes = df[df['Segmento Según Scorecard'] == 'RESTAURANTES']
+        store = df[df['Segmento Según Scorecard'] == 'Store']
+        supermercado = df[df['Segmento Según Scorecard'] == 'SUPERMERCADOS']
+        tat = df[df['Segmento Según Scorecard'] == 'TAT (TIENDAS)']
+        piedata = go.Bar(y = ['BARES' , 'Conveniencia','DISCOTECAS','Droguerías','Hiper y Supermercados','LICORERAS','MAYORISTAS','RESTAURANTES','Store','SUPERMERCADOS', 'TAT'],x=[(geek.nansum(bares['REAL'])/geek.nansum(bares['OBJ']))*100,(geek.nansum(Conveniencia['REAL'])/geek.nansum(Conveniencia['OBJ']))*100,(geek.nansum(Discotecas['REAL'])/geek.nansum(Discotecas['OBJ']))*100,(geek.nansum(Drogueria['REAL'])/geek.nansum(Drogueria['OBJ']))*100,(geek.nansum(Hiperysuper['REAL'])/geek.nansum(Hiperysuper['OBJ']))*100,(geek.nansum(licoreras['REAL'])/geek.nansum(licoreras['OBJ']))*100,(geek.nansum(mayorista['REAL'])/geek.nansum(mayorista['OBJ']))*100,(geek.nansum(restaurantes['REAL'])/geek.nansum(restaurantes['OBJ']))*100,(geek.nansum(store['REAL'])/geek.nansum(store['OBJ']))*100,(geek.nansum(supermercado['REAL'])/geek.nansum(supermercado['OBJ']))*100,(geek.nansum(tat['REAL'])/geek.nansum(tat['OBJ']))*100], orientation = 'h')
+        return {
+            'data':[piedata],'layout': {'title': 'EJECUCION x SEGMENTO SC'}
+        }
+    else:
+        dff = df[df['Plataforma'] == actividad]
+        bares = dff[dff['Segmento Según Scorecard']== 'BARES']
+        Conveniencia = dff[dff['Segmento Según Scorecard']== 'Conveniencia']
+        Discotecas = dff[dff['Segmento Según Scorecard']== 'DISCOTECAS']
+        Drogueria = dff[dff['Segmento Según Scorecard']== 'Droguerías']
+        Hiperysuper = dff[dff['Segmento Según Scorecard']== 'Hiper y Supermercados']
+        licoreras = dff[dff['Segmento Según Scorecard'] == 'LICORERAS']
+        mayorista = dff[dff['Segmento Según Scorecard'] == 'MAYORISTAS']
+        restaurantes = dff[dff['Segmento Según Scorecard'] == 'RESTAURANTES']
+        store = dff[dff['Segmento Según Scorecard'] == 'Store']
+        supermercado = dff[dff['Segmento Según Scorecard'] == 'SUPERMERCADOS']
+        tat = dff[dff['Segmento Según Scorecard'] == 'TAT (TIENDAS)']
+        piedata = go.Bar(y = ['BARES' , 'Conveniencia','DISCOTECAS','Droguerías','Hiper y Supermercados','LICORERAS','MAYORISTAS','RESTAURANTES','Store','SUPERMERCADOS', 'TAT'],x=[(geek.nansum(bares['REAL'])/geek.nansum(bares['OBJ']))*100,(geek.nansum(Conveniencia['REAL'])/geek.nansum(Conveniencia['OBJ']))*100,(geek.nansum(Discotecas['REAL'])/geek.nansum(Discotecas['OBJ']))*100,(geek.nansum(Drogueria['REAL'])/geek.nansum(Drogueria['OBJ']))*100,(geek.nansum(Hiperysuper['REAL'])/geek.nansum(Hiperysuper['OBJ']))*100,(geek.nansum(licoreras['REAL'])/geek.nansum(licoreras['OBJ']))*100,(geek.nansum(mayorista['REAL'])/geek.nansum(mayorista['OBJ']))*100,(geek.nansum(restaurantes['REAL'])/geek.nansum(restaurantes['OBJ']))*100,(geek.nansum(store['REAL'])/geek.nansum(store['OBJ']))*100,(geek.nansum(supermercado['REAL'])/geek.nansum(supermercado['OBJ']))*100,(geek.nansum(tat['REAL'])/geek.nansum(tat['OBJ']))*100], orientation = 'h')
+        return {
+            'data':[piedata],'layout': {'title': 'EJECUCION x SEGMENTO SC'}
+        }
+
 
 
 if __name__ == '__main__':
     app.run_server(debug=True)
-
