@@ -14,14 +14,152 @@ app = dash.Dash()
 df = pd.read_csv('Base.csv')
 
 available_indicators = df['Plataforma'].unique()
-
+mes_indicators = df['MES'].unique()
+semana_indicators = df['SEMANA'].unique()
+departamento_indicators = df['Departamento'].unique()
+distribuidor_indicators = df['Distribuidor'].unique()
+canal_indicators = df['Canal'].unique()
+segmento_indicators = df['Segmento'].unique()
 
 app.layout = html.Div([
-    html.Div([dcc.Dropdown(
-                id='Actividades',
-                options=[{'label': i, 'value': i} for i in available_indicators],
-            )],
-        style={'width': '100%', 'display': 'inline-block'}),
+    html.Div([html.Div(
+                    [
+                        html.H2(
+                            'Semáforo de ejecución',
+                            style={'text-align': 'center'}
+                        )
+                    ],
+
+                ),
+            html.Div(
+                    [
+                        html.H3(
+                            'Plataforma',
+                            style={'text-align': 'center'}
+                        ),
+                         dcc.Dropdown(
+                            id='Actividades',
+                            options=[{'label': i, 'value': i} for i in available_indicators],
+                        )
+                    ],
+                     style={'width': '23.5%', 'display': 'inline-block'}
+                ),
+            html.Div(
+                    [
+                        
+                    ],
+                     style={'width': '2%', 'display': 'inline-block'}
+                ),
+            html.Div(
+                    [
+                        html.H3(
+                            'Mes',
+                            style={'text-align': 'center'}
+                        ),
+                         dcc.Dropdown(
+                            id='Mes',
+                            options=[{'label': i, 'value': i} for i in mes_indicators],
+                        )
+                    ],
+                     style={'width': '23.5%', 'display': 'inline-block'}
+                ),
+            html.Div(
+                    [
+                        
+                    ],
+                     style={'width': '2%', 'display': 'inline-block'}
+                ),
+            html.Div(
+                    [
+                        html.H3(
+                            'Semana',
+                            style={'text-align': 'center'}
+                        ),
+                         dcc.Dropdown(
+                            id='semana',
+                            options=[{'label': i, 'value': i} for i in semana_indicators],
+                        )
+                    ],
+                     style={'width': '23.5%', 'display': 'inline-block'}
+                ),
+            html.Div(
+                    [
+                        
+                    ],
+                     style={'width': '2%', 'display': 'inline-block'}
+                ),
+            html.Div(
+                    [
+                        html.H3(
+                            'Departamento',
+                            style={'text-align': 'center'}
+                        ),
+                         dcc.Dropdown(
+                            id='Departamento',
+                            options=[{'label': i, 'value': i} for i in departamento_indicators],
+                        )
+                    ],
+                     style={'width': '23.5%', 'display': 'inline-block'}
+                ),
+             html.Div(
+                    [
+                        html.H3(
+                            'Distribuidor',
+                            style={'text-align': 'center'}
+                        ),
+                         dcc.Dropdown(
+                            id='Distribuidor',
+                            options=[{'label': i, 'value': i} for i in distribuidor_indicators],
+                        )
+                    ],
+                     style={'width': '23.5%', 'display': 'inline-block'}
+                ),
+                 html.Div(
+                    [
+                        
+                    ],
+                     style={'width': '2%', 'display': 'inline-block'}
+                ),
+                html.Div(
+                    [
+                        html.H3(
+                            'Canal',
+                            style={'text-align': 'center'}
+                        ),
+                         dcc.Dropdown(
+                            id='Canal',
+                            options=[{'label': i, 'value': i} for i in canal_indicators],
+                        )
+                    ],
+                     style={'width': '23.5%', 'display': 'inline-block'}
+                ),
+                html.Div(
+                    [
+                        
+                    ],
+                     style={'width': '2%', 'display': 'inline-block'}
+                ),
+                html.Div(
+                    [
+                        html.H3(
+                            'Segmento',
+                            style={'text-align': 'center'}
+                        ),
+                         dcc.Dropdown(
+                            id='Segmento',
+                            options=[{'label': i, 'value': i} for i in segmento_indicators],
+                        )
+                    ],
+                     style={'width': '23.5%', 'display': 'inline-block'}
+                ),
+                html.Div(
+                    [
+                        
+                    ],
+                     style={'width': '25.5%', 'display': 'inline-block'}
+                ),   
+           ],
+       ),
     html.Div([ dcc.Graph(
             id='crossfilter-indicator-scatter',
         )
@@ -50,7 +188,8 @@ app.layout = html.Div([
 
 @app.callback(
     dash.dependencies.Output('crossfilter-indicator-scatter','figure'),
-    [dash.dependencies.Input('Actividades','value')])
+    [dash.dependencies.Input('Actividades','value'),
+     ])
 def graph(actividad):
     if actividad is None:
         lista1 = df['OBJ']
@@ -87,7 +226,7 @@ def graphbar(actividad):
         piedata = go.Bar(x = ['Altipal' , 'Dialsa','Meico' ],y=[(geek.nansum(altipal['REAL'])/geek.nansum(altipal['OBJ']))*100,(geek.nansum(dialsa['REAL'])/geek.nansum(dialsa['OBJ']))*100,(geek.nansum(meico['REAL'])/geek.nansum(meico['OBJ']))*100])
         
         return {
-            'data':[piedata],'layout': {'title': 'EJECUCION'}
+            'data':[piedata],'layout': {'title': 'EJECUCION x DISTRIBUIDOR'}
         }
     else:    
         dff = df[df['Plataforma'] == actividad]
@@ -97,7 +236,7 @@ def graphbar(actividad):
         piedata = go.Bar(x = ['Altipal' , 'Dialsa','Meico' ],y=[(geek.nansum(altipal['REAL'])/geek.nansum(altipal['OBJ']))*100,(geek.nansum(dialsa['REAL'])/geek.nansum(dialsa['OBJ']))*100,(geek.nansum(meico['REAL'])/geek.nansum(meico['OBJ']))*100])
         
         return {
-            'data':[piedata],'layout': {'title': 'EJECUCION'}
+            'data':[piedata],'layout': {'title': 'EJECUCION x DISTRIBUIDOR'}
         }
 
 @app.callback(
@@ -131,7 +270,7 @@ def graphweek(actividad):
         lineMeicodata = go.Scatter(name= 'Meico', x = ['1','2','3','4'],y=[(geek.nansum(semana1['REAL'])/geek.nansum(semana1['OBJ']))*100,(geek.nansum(semana2['REAL'])/geek.nansum(semana2['OBJ']))*100,(geek.nansum(semana3['REAL'])/geek.nansum(semana3['OBJ']))*100,(geek.nansum(semana4['REAL'])/geek.nansum(semana4['OBJ']))*100])
 
         return {
-            'data':[lineGeneraldata , lineAltipaldata, lineDialsadata, lineMeicodata],'layout': {'title': 'EJECUCION'}
+            'data':[lineGeneraldata , lineAltipaldata, lineDialsadata, lineMeicodata],'layout': {'title': 'EJECUCION x SEMANA'}
         }
     else:    
         dff = df[df['Plataforma'] == actividad]
@@ -161,7 +300,7 @@ def graphweek(actividad):
         lineMeicodata = go.Scatter(name= 'Meico', x = ['1','2','3','4'],y=[(geek.nansum(semana1['REAL'])/geek.nansum(semana1['OBJ']))*100,(geek.nansum(semana2['REAL'])/geek.nansum(semana2['OBJ']))*100,(geek.nansum(semana3['REAL'])/geek.nansum(semana3['OBJ']))*100,(geek.nansum(semana4['REAL'])/geek.nansum(semana4['OBJ']))*100])
 
         return {
-            'data':[lineGeneraldata , lineAltipaldata, lineDialsadata, lineMeicodata],'layout': {'title': 'EJECUCION'}
+            'data':[lineGeneraldata , lineAltipaldata, lineDialsadata, lineMeicodata],'layout': {'title': 'EJECUCION x SEMANA'}
         }
 
 @app.callback(
@@ -228,41 +367,41 @@ def graphChannel(actividad):
 def graphChannel(actividad):
     if actividad is None:
         dff = df['Plataforma'].unique()
-        print(dff)
-        bares = df[df['Segmento Según Scorecard']== 'BARES']
-        Conveniencia = df[df['Segmento Según Scorecard']== 'Conveniencia']
-        Discotecas = df[df['Segmento Según Scorecard']== 'DISCOTECAS']
-        Drogueria = df[df['Segmento Según Scorecard']== 'Droguerías']
-        Hiperysuper = df[df['Segmento Según Scorecard']== 'Hiper y Supermercados']
-        licoreras = df[df['Segmento Según Scorecard'] == 'LICORERAS']
-        mayorista = df[df['Segmento Según Scorecard'] == 'MAYORISTAS']
-        restaurantes = df[df['Segmento Según Scorecard'] == 'RESTAURANTES']
-        store = df[df['Segmento Según Scorecard'] == 'Store']
-        supermercado = df[df['Segmento Según Scorecard'] == 'SUPERMERCADOS']
-        tat = df[df['Segmento Según Scorecard'] == 'TAT (TIENDAS)']
-        piedata = go.Bar(y = ['BARES' , 'Conveniencia','DISCOTECAS','Droguerías','Hiper y Supermercados','LICORERAS','MAYORISTAS','RESTAURANTES','Store','SUPERMERCADOS', 'TAT'],x=[(geek.nansum(bares['REAL'])/geek.nansum(bares['OBJ']))*100,(geek.nansum(Conveniencia['REAL'])/geek.nansum(Conveniencia['OBJ']))*100,(geek.nansum(Discotecas['REAL'])/geek.nansum(Discotecas['OBJ']))*100,(geek.nansum(Drogueria['REAL'])/geek.nansum(Drogueria['OBJ']))*100,(geek.nansum(Hiperysuper['REAL'])/geek.nansum(Hiperysuper['OBJ']))*100,(geek.nansum(licoreras['REAL'])/geek.nansum(licoreras['OBJ']))*100,(geek.nansum(mayorista['REAL'])/geek.nansum(mayorista['OBJ']))*100,(geek.nansum(restaurantes['REAL'])/geek.nansum(restaurantes['OBJ']))*100,(geek.nansum(store['REAL'])/geek.nansum(store['OBJ']))*100,(geek.nansum(supermercado['REAL'])/geek.nansum(supermercado['OBJ']))*100,(geek.nansum(tat['REAL'])/geek.nansum(tat['OBJ']))*100], orientation = 'h')
+        column = [[],[]]
+        for row in dff:
+            dfff = df[df['Plataforma'] == row]
+            reales = geek.nansum(dfff['REAL'])
+            objt = geek.nansum(dfff['OBJ'])
+            falta = 100 - ((reales/objt)*100) 
+            if falta > 0:
+                if (reales/objt) <= 1:
+                    column[0].append(row)
+                    column[1].append(falta)
+
+        
+        piedata = go.Bar(x = column[0],y=column[1], orientation = 'v')
         return {
-            'data':[piedata],'layout': {'title': 'EJECUCION x SEGMENTO SC'}
+            'data':[piedata],'layout': {'title': 'EJECUCION FALTANTE x ACTIVIDAD'}
         }
     else:
-        dff = df[df['Plataforma'] == actividad]
-        bares = dff[dff['Segmento Según Scorecard']== 'BARES']
-        Conveniencia = dff[dff['Segmento Según Scorecard']== 'Conveniencia']
-        Discotecas = dff[dff['Segmento Según Scorecard']== 'DISCOTECAS']
-        Drogueria = dff[dff['Segmento Según Scorecard']== 'Droguerías']
-        Hiperysuper = dff[dff['Segmento Según Scorecard']== 'Hiper y Supermercados']
-        licoreras = dff[dff['Segmento Según Scorecard'] == 'LICORERAS']
-        mayorista = dff[dff['Segmento Según Scorecard'] == 'MAYORISTAS']
-        restaurantes = dff[dff['Segmento Según Scorecard'] == 'RESTAURANTES']
-        store = dff[dff['Segmento Según Scorecard'] == 'Store']
-        supermercado = dff[dff['Segmento Según Scorecard'] == 'SUPERMERCADOS']
-        tat = dff[dff['Segmento Según Scorecard'] == 'TAT (TIENDAS)']
-        piedata = go.Bar(y = ['BARES' , 'Conveniencia','DISCOTECAS','Droguerías','Hiper y Supermercados','LICORERAS','MAYORISTAS','RESTAURANTES','Store','SUPERMERCADOS', 'TAT'],x=[(geek.nansum(bares['REAL'])/geek.nansum(bares['OBJ']))*100,(geek.nansum(Conveniencia['REAL'])/geek.nansum(Conveniencia['OBJ']))*100,(geek.nansum(Discotecas['REAL'])/geek.nansum(Discotecas['OBJ']))*100,(geek.nansum(Drogueria['REAL'])/geek.nansum(Drogueria['OBJ']))*100,(geek.nansum(Hiperysuper['REAL'])/geek.nansum(Hiperysuper['OBJ']))*100,(geek.nansum(licoreras['REAL'])/geek.nansum(licoreras['OBJ']))*100,(geek.nansum(mayorista['REAL'])/geek.nansum(mayorista['OBJ']))*100,(geek.nansum(restaurantes['REAL'])/geek.nansum(restaurantes['OBJ']))*100,(geek.nansum(store['REAL'])/geek.nansum(store['OBJ']))*100,(geek.nansum(supermercado['REAL'])/geek.nansum(supermercado['OBJ']))*100,(geek.nansum(tat['REAL'])/geek.nansum(tat['OBJ']))*100], orientation = 'h')
+        dfff = df[df['Plataforma'] == actividad]
+        column = [[],[]]
+        reales = geek.nansum(dfff['REAL'])
+        objt = geek.nansum(dfff['OBJ'])
+        falta = 100 - ((reales/objt)*100)
+
+        if falta > 0:
+            if (reales/objt) <= 1:
+                column[0].append(actividad)
+                column[1].append(falta)
+
+        
+        piedata = go.Bar(x = column[0],y=column[1], orientation = 'v')
         return {
-            'data':[piedata],'layout': {'title': 'EJECUCION x SEGMENTO SC'}
+            'data':[piedata],'layout': {'title': 'EJECUCION FALTANTE x ACTIVIDAD'}
         }
 
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=True, port=8080)
