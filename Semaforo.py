@@ -159,27 +159,38 @@ app.layout = html.Div([
     html.Div([ dcc.Graph(
             id='crossfilter-indicator-scatter',
         )
-    ], style={'width': '100%', 'display': 'inline-block', 'padding': '0 20'}),
+    ], style={'width': '50%', 'display': 'inline-block', 'padding': '0 20'}),
     html.Div([ dcc.Graph(
             id='pieAltipal',
         )
-    ], style={'width': '100%', 'display': 'inline-block', 'padding': '0 20'}),
+    ], style={'width': '50%', 'display': 'inline-block', 'padding': '0 20'}),
     html.Div([ dcc.Graph(
             id='barWeek',
         )
-    ], style={'width': '100%', 'display': 'inline-block', 'padding': '0 20'}),
+    ], style={'width': '50%', 'display': 'inline-block', 'padding': '0 20'}),
     html.Div([ dcc.Graph(
             id='barChannel',
         )
-    ], style={'width': '100%', 'display': 'inline-block', 'padding': '0 20'}),
+    ], style={'width': '50%', 'display': 'inline-block', 'padding': '0 20'}),
+    html.Div(
+                    [
+                        
+                    ],
+                     style={'width': '10%', 'display': 'inline-block'}
+                ),
     html.Div([ dcc.Graph(
             id='barSegment',
         )
-    ], style={'width': '100%', 'display': 'inline-block', 'padding': '0 20'}),
+    ], style={'width': '80%', 'display': 'inline-block', 'padding': '0 20'}),
+   
      html.Div([ dcc.Graph(
             id='barFaltante',
+            config={
+			'displayModeBar':True,
+			'queueLength':0
+		    },
         )
-    ], style={'width': '100%', 'display': 'inline-block', 'padding': '0 20'}),
+    ], style={'width': '100%', 'height': '200%', 'display': 'inline-block', 'padding': '0 20'}),
     ])
 
 @app.callback(
@@ -387,9 +398,9 @@ def graphSegmento(actividad,mes,semana,departamento,distri,canal,segmento):
     store = dff[dff['Segmento Según Scorecard'] == 'Store']
     supermercado = dff[dff['Segmento Según Scorecard'] == 'SUPERMERCADOS']
     tat = dff[dff['Segmento Según Scorecard'] == 'TAT (TIENDAS)']
-    piedata = go.Bar(y = ['BARES' , 'Conveniencia','DISCOTECAS','Droguerías','Hiper y Supermercados','LICORERAS','MAYORISTAS','RESTAURANTES','Store','SUPERMERCADOS', 'TAT'],x=[(geek.nansum(bares['REAL'])/geek.nansum(bares['OBJ']))*100,(geek.nansum(Conveniencia['REAL'])/geek.nansum(Conveniencia['OBJ']))*100,(geek.nansum(Discotecas['REAL'])/geek.nansum(Discotecas['OBJ']))*100,(geek.nansum(Drogueria['REAL'])/geek.nansum(Drogueria['OBJ']))*100,(geek.nansum(Hiperysuper['REAL'])/geek.nansum(Hiperysuper['OBJ']))*100,(geek.nansum(licoreras['REAL'])/geek.nansum(licoreras['OBJ']))*100,(geek.nansum(mayorista['REAL'])/geek.nansum(mayorista['OBJ']))*100,(geek.nansum(restaurantes['REAL'])/geek.nansum(restaurantes['OBJ']))*100,(geek.nansum(store['REAL'])/geek.nansum(store['OBJ']))*100,(geek.nansum(supermercado['REAL'])/geek.nansum(supermercado['OBJ']))*100,(geek.nansum(tat['REAL'])/geek.nansum(tat['OBJ']))*100], orientation = 'h')
+    piedata = go.Bar(y = ['BARES' , 'Conveniencia','DISCOTECAS','Droguerías','Hiper y Supermercados','LICORERAS','MAYORISTAS','RESTAURANTES','Store','SUPERMERCADOS', 'TAT'],x=[(geek.nansum(bares['REAL'])/geek.nansum(bares['OBJ']))*100,(geek.nansum(Conveniencia['REAL'])/geek.nansum(Conveniencia['OBJ']))*100,(geek.nansum(Discotecas['REAL'])/geek.nansum(Discotecas['OBJ']))*100,(geek.nansum(Drogueria['REAL'])/geek.nansum(Drogueria['OBJ']))*100,(geek.nansum(Hiperysuper['REAL'])/geek.nansum(Hiperysuper['OBJ']))*100,(geek.nansum(licoreras['REAL'])/geek.nansum(licoreras['OBJ']))*100,(geek.nansum(mayorista['REAL'])/geek.nansum(mayorista['OBJ']))*100,(geek.nansum(restaurantes['REAL'])/geek.nansum(restaurantes['OBJ']))*100,(geek.nansum(store['REAL'])/geek.nansum(store['OBJ']))*100,(geek.nansum(supermercado['REAL'])/geek.nansum(supermercado['OBJ']))*100,(geek.nansum(tat['REAL'])/geek.nansum(tat['OBJ']))*100], orientation = 'h' )
     return {
-        'data':[piedata],'layout': {'title': 'EJECUCION x SEGMENTO SC'}
+        'data':[piedata],'layout': {'title': 'EJECUCION x SEGMENTO SC', 'yaxis': {'autorange': True,  'automargin': True, 'animate': True}}
     }
 
 @app.callback(
@@ -427,17 +438,17 @@ def graphPlatf(actividad,mes,semana,departamento,distri,canal,segmento):
             if (reales/objt) <= 1:
                 column[0].append(actividad)
                 column[1].append(falta) 
-        piedata = go.Bar(x = column[0],y=column[1], orientation = 'v')
+        piedata = go.Bar(x = column[0],y=column[1], orientation = 'h')
         return {
-            'data':[piedata],'layout': {'title': 'EJECUCION FALTANTE x ACTIVIDAD'}
+            'data':[piedata],'layout': {'title': 'EJECUCION FALTANTE x ACTIVIDAD', 'yaxis': {'autorange': True,'title': 'X Axis',  'automargin': True, 'animate': True}}
         }
     if actividad is None:
-        dff = df['Plataforma'].unique()
+        plat = dff['Plataforma'].unique()
         column = [[],[]]
-        for row in dff:
+        for row in plat:
             print(row)
-            print(df['Plataforma'] == row)
-            dfff = df[df['Plataforma'] == row]
+            print(dff['Plataforma'] == row)
+            dfff = dff[dff['Plataforma'] == row]
             reales = geek.nansum(dfff['REAL'])
             objt = geek.nansum(dfff['OBJ'])
             falta = 100 - ((reales/objt)*100) 
@@ -446,9 +457,9 @@ def graphPlatf(actividad,mes,semana,departamento,distri,canal,segmento):
                     column[0].append(row)
                     column[1].append(falta)
 
-        piedata = go.Bar(x = column[0],y=column[1], orientation = 'v')
+        piedata = go.Bar(y = column[0],x=column[1], orientation = 'h')
         return {
-            'data':[piedata],'layout': {'title': 'EJECUCION FALTANTE x ACTIVIDAD'}
+            'data':[piedata],'layout': {'title': 'EJECUCION FALTANTE x ACTIVIDAD', 'yaxis': {'autorange': True,  'automargin': True, 'animate': True}}
         }
     
     
